@@ -684,6 +684,10 @@ GigabitEthernet0/0 is up, line protocol is up (connected)
 Наш mac адрес `5000.0006.0000` 
 
 Теперь выведем `spanning-tree`
+
+<details><summary>Spanning-tree коммутатора уровня распределения</summary>
+
+
 ```
 Switch#show spanning-tree
 
@@ -747,6 +751,9 @@ Gi0/0               Desg FWD 4         128.1    P2p
 Gi0/1               Desg FWD 4         128.2    P2p
 Gi0/2               Desg FWD 4         128.3    P2p
 ```
+
+
+</details>
 
 
 <details><summary>Spanning-tree Switch1</summary>
