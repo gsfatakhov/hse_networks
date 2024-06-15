@@ -892,6 +892,7 @@ Gi0/2               Desg LRN 4         128.3    P2p
 
 Заметим, во всех трех VLAN mac адрес корня является адресом коммутатора уровня распределения.
 
+**! Также заметим, что у switch2 интерфейс `Gi0/1` является альтернативным (`Altn`), то есть линк между коммутаторами уровня доступа заблокирован.**
 
 ## Настройка PC
 
@@ -909,3 +910,43 @@ VPCS> ip 10.0.20.2/24 10.0.20.1
 Checking for duplicate address...
 VPCS : 10.0.20.2 255.255.255.0 gateway 10.0.20.1
 ```
+
+
+### Резульаты
+
+#### Пинг из PC1 в PC2:
+```
+VPCS> ping 10.0.20.2
+
+84 bytes from 10.0.20.2 icmp_seq=1 ttl=63 time=19.565 ms
+84 bytes from 10.0.20.2 icmp_seq=2 ttl=63 time=16.112 ms
+84 bytes from 10.0.20.2 icmp_seq=3 ttl=63 time=8.323 ms
+84 bytes from 10.0.20.2 icmp_seq=4 ttl=63 time=11.120 ms
+84 bytes from 10.0.20.2 icmp_seq=5 ttl=63 time=6.707 ms
+```
+
+#### Проверка отказоустойчивости:
+
+Отключаем первый интерфейс
+
+```
+Switch(config)#int Gi0/2
+Switch(config-if)#shutdown
+*Jun 15 23:23:06.824: %LINK-5-CHANGED: Interface GigabitEthernet0/2, changed state to administratively down
+*Jun 15 23:23:07.824: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/2, changed state to down
+```
+
+После ожидания перестройки spaning-tree, пинги проходят:
+
+```
+VPCS> ping 10.0.20.2
+
+84 bytes from 10.0.20.2 icmp_seq=1 ttl=63 time=28.096 ms
+84 bytes from 10.0.20.2 icmp_seq=2 ttl=63 time=15.267 ms
+84 bytes from 10.0.20.2 icmp_seq=3 ttl=63 time=16.192 ms
+84 bytes from 10.0.20.2 icmp_seq=4 ttl=63 time=17.603 ms
+84 bytes from 10.0.20.2 icmp_seq=5 ttl=63 time=16.260 ms
+```
+
+Таким образом за счет отказоустойчивости (правильной настройки stp),
+при отключении одного интерфейса, пинги проходят.
